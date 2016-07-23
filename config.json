@@ -1,0 +1,12 @@
+{
+    "ignorePokemon": "Pidgey,Rattata",
+    "account": {
+        "username": "[POKEMONTRAINERCLUB_OR_GOOGLE_USERNAME]",
+        "password": "[POKEMONTRAINERCLUB_OR_GOOGLE_PASSWORD]",
+        "type": "[ptc_OR_google]"
+    },
+    "location": {
+        "type": "name",
+        "name": "Richmond Heights, MO"
+    }
+}
