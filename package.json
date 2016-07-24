@@ -2,6 +2,9 @@
   "name": "pokemon-slack-webhook",
   "version": "0.0.1",
   "description": "Slack webhook for posting pokemon loactions near a location",
+  "engines": {
+    "node": "5.12.0"
+  },
   "author": "Jeremy Dobler <anoddthought@gmail.com>",
   "main": "PokemonSlack.js",
   "repository": {
@@ -10,7 +13,7 @@
   },
   "dependencies": {
     "node-slack": "git+https://github.com/jeremy-dobler/node-slack.git",
-    "pokemon-go-node-api": "^0.0.11"
+    "pokemon-go-api": "^0.0.11"
   },
   "devDependencies": {}
 }
