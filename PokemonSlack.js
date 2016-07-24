@@ -1,115 +1,73 @@
 'use strict';
+const pokeApi = require('pokemon-go-api');
+const slackApi = require('node-slack');
+const pokemonInfo = require('./pokemons.json').pokemon;
+const config = require('./config.json');
 
-var pokeApi = require('pokemon-go-node-api');
-var slackApi = require('node-slack');
+const ignoredPokemon = config.ignoredPokemon || 'caterpie,weedle,pidgey,rattata,spearow,zubat';
+const username = config.account.username;
+const password = config.account.password;
+const provider = config.account.type;
+const location = config.location;
+const slackTitle = config.slack.messageTitle;
 
-var location = {
-    type: 'name',
-    name: '200 S Hanley rd, Clayton, MO'
+let slack = new slackApi(config.slack.webhookUrl);
+let slackMessageDefaults = {
+    channel: config.slack.channel,
+    username: slack.username
 };
-var username = 'anoddthought';
-var password = 'Marvel4Life';
-var provider = 'ptc';
-var ignorePokemon = 'pidgey,rattata,meowth';
+let nearby = [];
 
-var slack = new slackApi('https://hooks.slack.com/services/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');
-var slackMessageDefaults = {
-    channel: '#pokemongo',
-    username: 'pokebot'
-};
-
-var pokemonToReport = [];
-
-pokeApi.init(username, password, location, provider, function(err) {
-    if (err) throw err;
-
-    pokeApi.Heartbeat(function(err, hb) {
-        if (err) throw err;
-
-        pokemonToReport = getPokemon(hb.cells);
-
-        var rarePokemon = hideCommonPokemon(pokemonToReport);
-
-        reportPokemonToSlack(rarePokemon);
+pokeApi.login(username, password, provider)
+  .then(function() {
+    return pokeApi.location.set('address', location)
+      .then(pokeApi.getPlayerEndpoint);
+  })
+  .then(pokeApi.mapData.getNearby)
+  .then(function(data) {
+    data.forEach(function(x) {
+        if (x.catchable_pokemon && x.catchable_pokemon.length > 0) {
+            nearby = nearby.concat(x.catchable_pokemon);
+        }
     });
-});
-
-function getPokemon(cells) {
-    var pokemon = [];
-    for (var i = cells.length - 1; i >= 0; i--) {
-        if (cells[i].WildPokemon && cells[i].WildPokemon.length > 0) {
-            pokemon = pokemon.concat(cells[i].WildPokemon);
-        }
-        if (cells[i].NearbyPokemon && cells[i].NearbyPokemon.length > 0) {
-            pokemon = pokemon.concat(cells[i].NearbyPokemon);
-        }
-        if (cells[i].MapPokemon && cells[i].MapPokemon.length > 0) {
-            pokemon = pokemon.concat(cells[i].MapPokemon);
-        }
-    }
-    return pokemon;
-}
-
-function hideCommonPokemon(pokemon) {
-    var rarePoke = [];
-    for (var i = pokemon.length - 1; i >= 0; i--) {
-        var pokedexNumber = pokemon[i].PokedexNumber || pokemon[i].PokedexTypeId || pokemon[i].pokemon.PokemonId;
-        var pokeDetails = getPokemonDetails(pokedexNumber);
-        pokemon[i].name = pokeDetails.name;
-        pokemon[i].imgUrl = pokeDetails.img;
-        if (ignorePokemon.indexOf(pokemon[i].name.toLowerCase()) == -1) {
-            rarePoke.push(pokemon[i]);
-        }
-    }
-    console.log(pokemon);
-    return rarePoke;
-}
-
-function getPokemonDetails(pokedexNumber) {
-    return pokeApi.pokemonlist[parseInt(pokedexNumber) - 1];
-}
+    reportPokemonToSlack(nearby);
+  })
+  .catch(function(error) {
+    console.log('error', error.stack);
+  });
 
 function reportPokemonToSlack(pokemon) {
-    // create the header of the message
-    let text = 'There are some pokemon nearby!';
+    let attachments = getAttachments(pokemon);
 
-    // create the attachments displayed on the question
-    // let attachments = [ this.getSlackQuestion(question) ];
-
-    let slackMessage = {
-        attachments: getAttachments(pokemon),
-        text: text
-    };
-    slackMessage = Object.assign(slackMessageDefaults, slackMessage);
-    slack.send(slackMessageDefaults);
+    if (attachments.length > 0) {
+        let slackMessage = {
+            attachments: attachments,
+            text: slackMessageTitle
+        };
+        Object.assign(slackMessage, slackMessageDefaults);
+        slack.send(slackMessage);
+    }
 }
 
 function getAttachments(pokemon) {
-    var attachments = [];
+    let attachments = [];
     pokemon.forEach(function(poke) {
-        var pokemonAttachment = {
-            title: poke.name,
-            thumb_url: poke.imgUrl
-        };
+        let pokeInfo = getPokemonInfo(poke.pokemon_id);
+        if (ignoredPokemon.indexOf(pokeInfo.name.toLowerCase()) === -1) {
+            let pokemonAttachment = {
+                title: pokeInfo.name,
+                title_link: 'http://maps.google.com/?q=' + poke.latitude + ',' + poke.longitude,
+                thumb_url: pokeInfo.img
+            };
 
-        attachments.push(pokemonAttachment);
+            attachments.push(pokemonAttachment);
+        }
     });
     return attachments;
 }
 
-// function getLocation(pokemon) {
-//     var location = '';
-//     if (poke.EncounterId) {
-        
-//     } else {
-
-//     }
-// }
-
-// function getCardinalDirection(encounterId) {
-
-// }
-
-function getMapLink(pokemon) {
-    return 'http://maps.google.com/?q=' + pokemon.EncounterId + ',<lng>'
+function getPokemonInfo(pokedexNumber) {
+    return pokemonInfo.filter(function(poke) {
+        return poke.id == pokedexNumber;
+    })[0];
 }

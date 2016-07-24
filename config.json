@@ -1,12 +1,15 @@
 {
-    "ignorePokemon": "Pidgey,Rattata",
+    "ignorePokemon": "caterpie,weedle,pidgey,rattata,spearow,zubat",
     "account": {
         "username": "[POKEMONTRAINERCLUB_OR_GOOGLE_USERNAME]",
         "password": "[POKEMONTRAINERCLUB_OR_GOOGLE_PASSWORD]",
-        "type": "[ptc_OR_google]"
+        "type": "[google or pokemon-club]"
     },
-    "location": {
-        "type": "name",
-        "name": "Richmond Heights, MO"
+    "location": "[STREET_ADDRESS_OR_ZIP]",
+    "slack": {
+        "channel": "[SLACK_CHANNEL]",
+        "username": "[SLACK_USER_TO_POST_AS]",
+        "webhookUrl": "[SLACK_WEBHOOK_URL]",
+        "messageTitle": "There are some pokemon near the St. Louis office! \n <https://pokevision.com/#/@38.647525097406,-90.334375721162|For more details.>"
     }
 }

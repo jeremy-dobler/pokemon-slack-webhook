@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "node-slack": "git+https://github.com/jeremy-dobler/node-slack.git",
-    "pokemon-go-node-api": "^1.3.0"
+    "pokemon-go-node-api": "^0.0.11"
   },
   "devDependencies": {}
 }
