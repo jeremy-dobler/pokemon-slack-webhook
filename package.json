@@ -12,6 +12,7 @@
     "url": "https://github.com/jeremy-dobler/pokemon-slack-webhook.git"
   },
   "dependencies": {
+    "geocoder": "^0.2.2",
     "node-slack": "git+https://github.com/jeremy-dobler/node-slack.git",
     "pokemon-go-api": "^0.0.11"
   },
