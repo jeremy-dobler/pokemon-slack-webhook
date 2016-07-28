@@ -8,7 +8,7 @@
 #### a. ignoredPokemon - comma delimited list of Pokemon names(lowercase)
 #### b. account - google account information. (Pokemon Trainer Account does not work with current api)
 #### c. location - address that you want the api to check
-#### d. slack channel information
+#### d. slack channel information - https://my.slack.com/services/new/incoming-webhook/
 ##### i. channel name
 ##### ii. username to post as
 ##### iii. webhookUrl
