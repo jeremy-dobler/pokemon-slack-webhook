@@ -42,7 +42,7 @@ function reportPokemonToSlack(pokemon) {
     if (attachments.length > 0) {
         let slackMessage = {
             attachments: attachments,
-            text: slackMessageTitle
+            text: slackTitle
         };
         Object.assign(slackMessage, slackMessageDefaults);
         slack.send(slackMessage);

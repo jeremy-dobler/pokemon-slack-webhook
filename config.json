@@ -1,5 +1,5 @@
 {
-    "ignorePokemon": "caterpie,weedle,pidgey,rattata,spearow,zubat",
+    "ignoredPokemon": "caterpie,weedle,pidgey,rattata,spearow,zubat",
     "account": {
         "username": "[POKEMONTRAINERCLUB_OR_GOOGLE_USERNAME]",
         "password": "[POKEMONTRAINERCLUB_OR_GOOGLE_PASSWORD]",
